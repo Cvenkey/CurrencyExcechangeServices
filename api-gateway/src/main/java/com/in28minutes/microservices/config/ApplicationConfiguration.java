@@ -38,10 +38,5 @@ public class ApplicationConfiguration {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
-//    @Bean
-//    public HandlerExceptionResolver createDefaultHandlerExceptionResolver() {
-//        return new DefaultHandlerExceptionResolver();
-//    }
 }
 

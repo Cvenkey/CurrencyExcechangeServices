@@ -23,6 +23,15 @@ public class JwtAuthenticationFilter implements ServerAuthenticationConverter {
                 .flatMap(ex -> Mono.justOrEmpty(ex.getRequest().getHeaders().getFirst("Authorization")))
                 .filter(authHeader -> authHeader.startsWith("Bearer "))
                 .map(authHeader -> authHeader.substring(7))  // Extract token after "Bearer "
-                .map(token -> new UsernamePasswordAuthenticationToken(token, token));
+                .flatMap(token -> {
+                    if (jwtTokenProvider.validateToken(token).block().equals(Boolean.TRUE)) {
+                        return Mono.just(new UsernamePasswordAuthenticationToken(
+                                jwtTokenProvider.getUsername(token),
+                                token,
+                                jwtTokenProvider.getAuthorities(token)));
+                    } else {
+                        return Mono.empty();
+                    }
+                });
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -39,7 +40,8 @@ public class CustomAuthenticationProvider implements ReactiveAuthenticationManag
 
     public List<GrantedAuthority> getAuthorities(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        String role = claims.get("role", String.class);
+        List list = claims.get("roles", List.class);
+        String role = (String)list.get(0);
         return List.of(new SimpleGrantedAuthority(role));
     }
 }
