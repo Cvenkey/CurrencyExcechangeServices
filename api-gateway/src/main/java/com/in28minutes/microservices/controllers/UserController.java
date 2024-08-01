@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -30,9 +31,9 @@ public class UserController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> allUsers() {
+    public Mono<ResponseEntity<List<User>>> allUsers() {
         List <User> users = userService.allUsers();
-        return ResponseEntity.ok(users);
+        return Mono.just(ResponseEntity.ok(users));
     }
 
     @PostMapping("/getUser")

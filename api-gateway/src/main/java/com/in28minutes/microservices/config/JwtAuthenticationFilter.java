@@ -20,7 +20,7 @@ public class JwtAuthenticationFilter implements ServerAuthenticationConverter {
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
         return Mono.justOrEmpty(exchange)
-                .flatMap(ex -> Mono.justOrEmpty(ex.getRequest().getHeaders().getFirst("Authorization")))
+                .flatMap(ex -> Mono.justOrEmpty(ex.getRequest().getHeaders().getFirst("authorization")))
                 .filter(authHeader -> authHeader.startsWith("Bearer "))
                 .map(authHeader -> authHeader.substring(7))  // Extract token after "Bearer "
                 .flatMap(token -> {

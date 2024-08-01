@@ -8,16 +8,14 @@ import com.in28minutes.microservices.entities.User;
 import com.in28minutes.microservices.services.AuthenticationService;
 import com.in28minutes.microservices.services.JwtService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @RequestMapping("/auth")
 @RestController
@@ -40,19 +38,14 @@ public class AuthenticationController {
     public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
         String[] roles = loginUserDto.getRoles();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        LoginResponse loginResponse;
         List<String> rolesList = Arrays.asList(roles);
-        /*rolesList.stream().forEach(role -> {
-            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
-            authorities.add(simpleGrantedAuthority);
-        });
-        //authenticatedUser.getAuthorities().addAll(authorities);
-        List<GrantedAuthority> authorities1 = authenticatedUser.getAuthorities();
-        GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authorities.get(0).getAuthority());
-        authorities1.add(simpleGrantedAuthority);
-        authenticatedUser.getAuthorities().addAll(authorities1);*/
-        String jwtToken = jwtService.generateToken(authenticatedUser,rolesList);
-        LoginResponse loginResponse = new LoginResponse().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        if (!Objects.isNull(authenticatedUser)) {
+            String jwtToken = jwtService.generateToken(authenticatedUser, rolesList);
+            loginResponse = new LoginResponse().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        } else {
+            loginResponse = new LoginResponse().setExpiresIn(0).setToken(null);
+        }
         return ResponseEntity.ok(loginResponse);
     }
 }
